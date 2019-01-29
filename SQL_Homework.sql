@@ -19,7 +19,7 @@ where first_name = "Joe";
 
 -- 2b. Find all actors whose last name contain the letters GEN:
 
-Select * from actor
+Select first_name, last_name from actor
 WHERE last_name LIKE '%gen%';
 
 -- 2c. Find all actors whose last names contain the letters LI. 
@@ -31,7 +31,7 @@ WHERE last_name LIKE '%LI%';
 -- 2d. Using IN, display the country_id and country columns of the following countries: 
 -- Afghanistan, Bangladesh, and China:
 
-SELECT * FROM country
+SELECT country_id, country FROM country
 WHERE country IN ('Afghanistan', 'Bangladesh', 'China');
 
 -- 3a. You want to keep a description of each actor. You don't think you will be performing queries on a description,
@@ -78,12 +78,13 @@ set first_name = "GROUCHO"
 where first_name = "Harpo" and last_name = "Williams";
 
 -- 5a. You cannot locate the schema of the address table. Which query would you use to re-create it?
--- NOT SOLVED
+
+
 SHOW COLUMNS from sakila.address;
 select * from address;
 SHOW CREATE TABLE sakila.address;
 
-CREATE TABLE `address` (
+CREATE TABLE `address_replacement` (
   `address_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `address` varchar(50) NOT NULL,
   `address2` varchar(50) DEFAULT NULL,
@@ -94,10 +95,11 @@ CREATE TABLE `address` (
   `location` geometry NOT NULL,
   `last_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`address_id`),
-  KEY `idx_fk_city_id` (`city_id`),
+    KEY `idx_fk_city_id` (`city_id`),
   SPATIAL KEY `idx_location` (`location`),
   CONSTRAINT `fk_address_city` FOREIGN KEY (`city_id`) REFERENCES `city` (`city_id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=605 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=605 DEFAULT CHARSET=utf8
+;
 
 select * from address;
 
@@ -105,11 +107,6 @@ select * from address;
 -- Use the tables staff and address:
 
 select * from address;
-
-select * from staff limit 10;
-
-SELECT first_name, last_name, address_id from staff
-inner join address on staff.address_id = address.address_id;
 
 SHOW COLUMNS from sakila.staff;
 
@@ -283,7 +280,7 @@ inner join rental r
 on i.inventory_id = r.inventory_id 
 inner join payment p 
 on r.rental_id = p.rental_id
-group by c.name
+group by name
 order by sum(p.amount) desc
 limit 5;
 
@@ -312,4 +309,4 @@ Select * from top_5_genres;
 
 -- 8c. You find that you no longer need the view top_five_genres. Write a query to delete it.
 
-DROP VIEW top_5_genres;
+DROP VIEW if exists top_5_genres;
